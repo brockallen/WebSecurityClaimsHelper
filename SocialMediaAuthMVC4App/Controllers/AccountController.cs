@@ -212,27 +212,6 @@ namespace SocialMediaAuthMVC4App.Controllers
             return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
 
-        [AllowAnonymous]
-        public void LoginWithGoogle()
-        {
-            OAuthWebSecurity.RequestAuthentication("google", Url.Action("LoginCallback"));
-        }
-
-        [AllowAnonymous]
-        public ActionResult LoginCallback()
-        {
-            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication();
-            if (result.IsSuccessful)
-            {
-                var provider = result.Provider;
-                var userID = result.ProviderUserId;
-                var userName = result.UserName;
-                var userData = result.ExtraData;
-                return View("LoggedIn");
-            }
-            return View("Error", result.Error);
-        }
-
         //
         // GET: /Account/ExternalLoginCallback
 
