@@ -30,11 +30,14 @@ namespace BrockAllen.WebSecurityClaimsHelper
             if (principal != null)
             {
                 var ctx = HttpContext.Current;
-                var claims = cookieHelper.Read(ctx);
-                if (claims != null)
+                if (ctx != null)
                 {
-                    var id = new ClaimsIdentity(claims);
-                    principal.AddIdentity(id);
+                    var claims = cookieHelper.Read(ctx);
+                    if (claims != null)
+                    {
+                        var id = new ClaimsIdentity(claims);
+                        principal.AddIdentity(id);
+                    }
                 }
             }
         }
@@ -42,13 +45,18 @@ namespace BrockAllen.WebSecurityClaimsHelper
         void OnLeave(object sender, EventArgs e)
         {
             var ctx = HttpContext.Current;
-            CheckForFormsLogin(ctx);
-            CheckForFormsLogout(ctx);
+            if (ctx != null)
+            {
+                CheckForFormsLogin(ctx);
+                CheckForFormsLogout(ctx);
+            }
         }
 
         private void CheckForFormsLogout(HttpContext ctx)
         {
-            if (ctx.User.Identity.IsAuthenticated)
+            if (ctx.User != null && 
+                ctx.User.Identity != null &&
+                ctx.User.Identity.IsAuthenticated)
             {
                 if (ctx.Response.Cookies.AllKeys.Contains(FormsAuthentication.FormsCookieName))
                 {
@@ -67,7 +75,9 @@ namespace BrockAllen.WebSecurityClaimsHelper
 
         private void CheckForFormsLogin(HttpContext ctx)
         {
-            if (!ctx.User.Identity.IsAuthenticated)
+            if (ctx.User == null || 
+                ctx.User.Identity == null ||
+                !ctx.User.Identity.IsAuthenticated)
             {
                 var formsUsername = ClaimsCookieHelper.ExtractUsernameFromFormsCookie();
                 if (!String.IsNullOrWhiteSpace(formsUsername))
